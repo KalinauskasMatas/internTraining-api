@@ -75,3 +75,16 @@ export const loginUser = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+
+export const logoutUser = async (req: Request, res: Response) => {
+  try {
+    res
+      .cookie("session_token", "", {
+        httpOnly: true,
+      })
+      .send("Cookie deleted");
+  } catch (error) {
+    res.status(405).send(error);
+    console.error(error);
+  }
+};
