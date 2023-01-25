@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import DBConnection from "./utils/DBConnection";
 
 import movieRoutes from "./routes/movieRoutes";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
 const port = 3005;
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/movies", movieRoutes);
+app.use("/user", userRoutes);
 
 app.listen(port, () => {
   DBConnection();

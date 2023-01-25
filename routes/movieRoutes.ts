@@ -4,7 +4,7 @@ import {
   getMovies,
   removeMovieById,
   updateMovieById,
-} from "../controllers/movieControllers";
+} from "../controllers/movieController";
 
 const router = express.Router();
 
