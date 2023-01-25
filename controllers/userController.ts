@@ -14,7 +14,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    const user = await userModel.findById(req.params.id);
+    const user = await userModel.findById(req.params.id, { password: 0 });
     res.status(202).json(user);
   } catch (error) {
     res.status(405).send(error);
