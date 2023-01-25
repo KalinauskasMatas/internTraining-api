@@ -11,3 +11,13 @@ export const getAllUsers = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+
+export const getUserById = async (req: Request, res: Response) => {
+  try {
+    const user = await userModel.findById(req.params.id);
+    res.status(202).json(user);
+  } catch (error) {
+    res.status(405).send(error);
+    console.error(error);
+  }
+};
