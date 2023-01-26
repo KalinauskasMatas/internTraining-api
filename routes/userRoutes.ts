@@ -9,6 +9,7 @@ import {
   getUserById,
   updateUserById,
 } from "../controllers/userController";
+import sessionValidation from "../utils/sessionValidation";
 
 const router = express.Router();
 
@@ -16,8 +17,8 @@ router.post("/register", createUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 
-router.get("/get", getAllUsers);
-router.get("/get/:id", getUserById);
-router.put("/update/:id", updateUserById);
+router.get("/get", sessionValidation, getAllUsers);
+router.get("/get/:id", sessionValidation, getUserById);
+router.put("/update/:id", sessionValidation, updateUserById);
 
 export default router;
