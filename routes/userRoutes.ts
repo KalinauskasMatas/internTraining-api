@@ -4,7 +4,11 @@ import {
   loginUser,
   logoutUser,
 } from "../controllers/authController";
-import { getAllUsers, getUserById } from "../controllers/userController";
+import {
+  getAllUsers,
+  getUserById,
+  updateUserById,
+} from "../controllers/userController";
 
 const router = express.Router();
 
@@ -14,5 +18,6 @@ router.post("/logout", logoutUser);
 
 router.get("/get", getAllUsers);
 router.get("/get/:id", getUserById);
+router.put("/update/:id", updateUserById);
 
 export default router;
