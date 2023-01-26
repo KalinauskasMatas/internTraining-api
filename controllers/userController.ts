@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
 import userModel from "../models/userModel";
+import movieModel from "../models/movieModel";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -61,6 +62,58 @@ export const updateUserById = async (req: Request, res: Response) => {
       newUser?.toJSON()!;
 
     return res.status(200).json(newRemainingData);
+  } catch (error) {
+    res.status(405).send(error);
+    console.error(error);
+  }
+};
+
+export const rentMovie = async (req: Request, res: Response) => {
+  try {
+    const user = await userModel.findById(res.locals.user.id);
+
+    if (!user) {
+      return res.status(404).send("User was not found");
+    }
+
+    const foundMovieRented = user.rentMovies.filter(
+      (movie) => movie.id === req.body.movieId
+    );
+
+    if (foundMovieRented.length > 0) {
+      return res.status(409).send("User has already rented this book");
+    }
+
+    const foundMovie = await movieModel.findById(req.body.movieId);
+
+    if (!foundMovie) {
+      return res.status(404).send("Movie with this id was not found");
+    }
+
+    if (foundMovie.stock < 1) {
+      return res.status(405).send("Movie stock is empty");
+    }
+
+    await movieModel.findByIdAndUpdate(req.body.movieId, {
+      stock: foundMovie.stock - 1,
+    });
+
+    const updatedRentMovies = [
+      ...user.rentMovies,
+      { id: req.body.movieId, time: 12 },
+    ];
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      res.locals.user.id,
+      {
+        rentMovies: updatedRentMovies,
+      },
+      { new: true }
+    );
+
+    const { password, ...remainingData } = updatedUser!.toJSON();
+
+    return res.status(200).json(remainingData);
   } catch (error) {
     res.status(405).send(error);
     console.error(error);
