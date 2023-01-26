@@ -30,7 +30,7 @@ const sessionValidation = (req: Request, res: Response, next: NextFunction) => {
       res.locals.user = user;
     }
   );
-  console.log(res.locals.user);
+  if (error) return;
   next();
 };
 
