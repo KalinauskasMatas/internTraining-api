@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JsonWebTokenError, VerifyErrors } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import userModel from "../models/userModel";
 
-const sessionValidation = (req: Request, res: Response, next: NextFunction) => {
+const sessionValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const token = req.cookies.session_token;
   let error = false;
 
@@ -31,6 +36,14 @@ const sessionValidation = (req: Request, res: Response, next: NextFunction) => {
     }
   );
   if (error) return;
+
+  const foundUser = await userModel.findById(res.locals.user.id);
+  if (!foundUser) {
+    return res
+      .cookie("session_token", "")
+      .status(401)
+      .send("Please log in again");
+  }
   next();
 };
 
