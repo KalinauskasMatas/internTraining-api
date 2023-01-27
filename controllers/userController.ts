@@ -23,6 +23,16 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+export const getOwnData = async (req: Request, res: Response) => {
+  try {
+    const user = await userModel.findById(res.locals.user.id, { password: 0 });
+    res.status(202).json(user);
+  } catch (error) {
+    res.status(405).send(error);
+    console.error(error);
+  }
+};
+
 export const updateUserById = async (req: Request, res: Response) => {
   try {
     const user = await userModel.findById(req.params.id);

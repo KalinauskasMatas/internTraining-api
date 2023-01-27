@@ -8,6 +8,7 @@ import {
 
 import {
   getAllUsers,
+  getOwnData,
   getUserById,
   updateUserById,
 } from "../controllers/userController";
@@ -26,6 +27,7 @@ router.post("/logout", logoutUser);
 
 router.get("/get", sessionValidation, verifyAdminPriviledge, getAllUsers);
 router.get("/get/:id", sessionValidation, verifyUserPriviledge, getUserById);
+router.get("/owndata", sessionValidation, getOwnData);
 router.put(
   "/update/:id",
   sessionValidation,
