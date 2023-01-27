@@ -54,6 +54,7 @@ export const updateUserById = async (req: Request, res: Response) => {
         $set: remainingData,
         ...(newPsw ? { password: newPsw } : {}),
         ...(!isCurrentUserAdmin ? { isAdmin: false } : {}),
+        ...(!isCurrentUserAdmin ? { rentMovies: [...user.rentMovies] } : {}),
       },
       { new: true }
     );
@@ -132,7 +133,7 @@ export const returnMovie = async (req: Request, res: Response) => {
       (movie) => movie.id === req.body.movieId
     );
     if (!foundRentMovie)
-      return res.status(404).send("User have no movie with this id");
+      return res.status(404).send("User has no movie with this id");
 
     const foundAvailableMovie = await movieModel.findById(req.body.movieId);
     if (!foundAvailableMovie)
