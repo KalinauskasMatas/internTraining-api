@@ -4,6 +4,8 @@ import {
   addMovie,
   getMovies,
   removeMovieById,
+  rentMovie,
+  returnMovie,
   updateMovieById,
 } from "../controllers/movieController";
 
@@ -30,5 +32,8 @@ router.delete(
   verifyAdminPriviledge,
   removeMovieById
 );
+
+router.post("/rent", sessionValidation, rentMovie);
+router.post("/return", sessionValidation, returnMovie);
 
 export default router;

@@ -9,8 +9,6 @@ import {
 import {
   getAllUsers,
   getUserById,
-  rentMovie,
-  returnMovie,
   updateUserById,
 } from "../controllers/userController";
 
@@ -34,7 +32,5 @@ router.put(
   verifyUserPriviledge,
   updateUserById
 );
-router.post("/rent", sessionValidation, rentMovie);
-router.post("/return", sessionValidation, returnMovie);
 
 export default router;

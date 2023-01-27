@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 import movieModel from "../models/movieModel";
+import userModel from "../models/userModel";
 
 export const getMovies = async (req: Request, res: Response) => {
   try {
@@ -45,6 +46,103 @@ export const removeMovieById = async (req: Request, res: Response) => {
   try {
     const movie = await movieModel.findByIdAndDelete(req.params.id);
     res.status(200).json(movie);
+  } catch (error) {
+    res.status(405).send(error);
+    console.error(error);
+  }
+};
+
+export const rentMovie = async (req: Request, res: Response) => {
+  try {
+    const user = await userModel.findById(res.locals.user.id);
+
+    if (!user) {
+      return res.status(404).send("User was not found");
+    }
+
+    const foundMovieRented = user.rentMovies.filter(
+      (movie) => movie.id === req.body.movieId
+    );
+
+    if (foundMovieRented.length > 0) {
+      return res.status(409).send("User has already rented this book");
+    }
+
+    const foundMovie = await movieModel.findById(req.body.movieId);
+
+    if (!foundMovie) {
+      return res.status(404).send("Movie with this id was not found");
+    }
+
+    if (foundMovie.stock < 1) {
+      return res.status(405).send("Movie stock is empty");
+    }
+
+    await movieModel.findByIdAndUpdate(req.body.movieId, {
+      stock: foundMovie.stock - 1,
+    });
+
+    const updatedRentMovies = [
+      ...user.rentMovies,
+      { id: req.body.movieId, time: 12 },
+    ];
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      res.locals.user.id,
+      {
+        rentMovies: updatedRentMovies,
+      },
+      { new: true }
+    );
+
+    const { password, ...remainingData } = updatedUser!.toJSON();
+
+    return res.status(200).json(remainingData);
+  } catch (error) {
+    res.status(405).send(error);
+    console.error(error);
+  }
+};
+
+export const returnMovie = async (req: Request, res: Response) => {
+  try {
+    const user = await userModel.findById(res.locals.user.id);
+
+    if (!user) {
+      return res.status(404).send("User was not found");
+    }
+
+    const foundRentMovie = user.rentMovies.find(
+      (movie) => movie.id === req.body.movieId
+    );
+    if (!foundRentMovie)
+      return res.status(404).send("User has no movie with this id");
+
+    const foundAvailableMovie = await movieModel.findById(req.body.movieId);
+    if (!foundAvailableMovie)
+      return res
+        .status(404)
+        .send("Movie with this id was not found on the database");
+
+    const updatedMovieList = user.rentMovies.filter(
+      (movie) => movie.id !== req.body.movieId
+    );
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      res.locals.user.id,
+      {
+        rentMovies: [...updatedMovieList],
+      },
+      { new: true }
+    );
+
+    await movieModel.findByIdAndUpdate(req.body.movieId, {
+      stock: foundAvailableMovie.stock + 1,
+    });
+
+    const { password, ...remainingData } = updatedUser!.toJSON();
+
+    return res.status(202).json(remainingData);
   } catch (error) {
     res.status(405).send(error);
     console.error(error);
