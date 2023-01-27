@@ -21,7 +21,8 @@ export const createUser = async (req: Request, res: Response) => {
     });
     await newUser.save();
 
-    if (!process.env.JWT_SECRET) throw "No JWT_SECRET found on .env file";
+    if (!process.env.JWT_SECRET)
+      throw new Error("No JWT_SECRET found on .env file");
 
     const { password, ...remainingData } = req.body;
     const token = jwt.sign(
@@ -44,7 +45,8 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    if (!process.env.JWT_SECRET) throw "No JWT_SECRET found on .env file";
+    if (!process.env.JWT_SECRET)
+      throw new Error("No JWT_SECRET found on .env file");
 
     const user = await userModel.findOne({ email: req.body.email });
     if (!user) {

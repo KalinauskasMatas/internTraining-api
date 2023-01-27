@@ -119,3 +119,48 @@ export const rentMovie = async (req: Request, res: Response) => {
     console.error(error);
   }
 };
+
+export const returnMovie = async (req: Request, res: Response) => {
+  try {
+    const user = await userModel.findById(res.locals.user.id);
+
+    if (!user) {
+      return res.status(404).send("User was not found");
+    }
+
+    const foundRentMovie = user.rentMovies.find(
+      (movie) => movie.id === req.body.movieId
+    );
+    if (!foundRentMovie)
+      return res.status(404).send("User have no movie with this id");
+
+    const foundAvailableMovie = await movieModel.findById(req.body.movieId);
+    if (!foundAvailableMovie)
+      return res
+        .status(404)
+        .send("Movie with this id was not found on the database");
+
+    const updatedMovieList = user.rentMovies.filter(
+      (movie) => movie.id !== req.body.movieId
+    );
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      res.locals.user.id,
+      {
+        rentMovies: [...updatedMovieList],
+      },
+      { new: true }
+    );
+
+    await movieModel.findByIdAndUpdate(req.body.movieId, {
+      stock: foundAvailableMovie.stock + 1,
+    });
+
+    const { password, ...remainingData } = updatedUser!.toJSON();
+
+    return res.status(202).json(remainingData);
+  } catch (error) {
+    res.status(405).send(error);
+    console.error(error);
+  }
+};
