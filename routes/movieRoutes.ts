@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   addMovie,
+  changeTime,
   getMovies,
   removeMovieById,
   rentMovie,
@@ -9,16 +10,13 @@ import {
   updateMovieById,
 } from "../controllers/movieController";
 
-import {
-  verifyAdminPriviledge,
-  verifyUserPriviledge,
-} from "../utils/priviledgeCheck";
+import { verifyAdminPriviledge } from "../utils/priviledgeCheck";
 
 import sessionValidation from "../utils/sessionValidation";
 
 const router = express.Router();
 
-router.get("/", sessionValidation, getMovies);
+router.get("/", getMovies);
 router.post("/add", sessionValidation, verifyAdminPriviledge, addMovie);
 router.put(
   "/update/:id",
@@ -35,5 +33,6 @@ router.delete(
 
 router.post("/rent", sessionValidation, rentMovie);
 router.post("/return", sessionValidation, returnMovie);
+router.put("/time", sessionValidation, changeTime);
 
 export default router;
