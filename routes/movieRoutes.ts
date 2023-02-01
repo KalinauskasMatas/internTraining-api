@@ -16,7 +16,7 @@ import sessionValidation from "../utils/sessionValidation";
 
 const router = express.Router();
 
-router.get("/", getMovies);
+router.get("/", sessionValidation, getMovies);
 router.post("/add", sessionValidation, verifyAdminPriviledge, addMovie);
 router.put(
   "/update/:id",
