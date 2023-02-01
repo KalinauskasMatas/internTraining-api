@@ -65,13 +65,10 @@ export const updateUserById = async (req: Request, res: Response) => {
         ...(!isCurrentUserAdmin ? { isAdmin: false } : {}),
         ...(!isCurrentUserAdmin ? { rentMovies: [...user.rentMovies] } : {}),
       },
-      { new: true }
+      { new: true, projection: { password: 0 } }
     );
 
-    const { password: newUserPassword, ...newRemainingData } =
-      newUser?.toJSON()!;
-
-    return res.status(200).json(newRemainingData);
+    return res.status(200).json(newUser);
   } catch (error) {
     res.status(405).send(error);
     console.error(error);
