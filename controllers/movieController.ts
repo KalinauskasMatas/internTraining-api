@@ -92,12 +92,10 @@ export const rentMovie = async (req: Request, res: Response) => {
       {
         rentMovies: updatedRentMovies,
       },
-      { new: true }
+      { new: true, projection: { password: 0 } }
     );
 
-    const { password, ...remainingData } = updatedUser!.toJSON();
-
-    return res.status(200).json(remainingData);
+    return res.status(200).json(updatedUser);
   } catch (error) {
     res.status(405).send(error);
     console.error(error);
@@ -133,16 +131,14 @@ export const returnMovie = async (req: Request, res: Response) => {
       {
         rentMovies: [...updatedMovieList],
       },
-      { new: true }
+      { new: true, projection: { password: 0 } }
     );
 
     await movieModel.findByIdAndUpdate(req.body.movieId, {
       stock: foundAvailableMovie.stock + 1,
     });
 
-    const { password, ...remainingData } = updatedUser!.toJSON();
-
-    return res.status(202).json(remainingData);
+    return res.status(202).json(updatedUser);
   } catch (error) {
     res.status(405).send(error);
     console.error(error);
@@ -187,11 +183,10 @@ export const changeTime = async (req: Request, res: Response) => {
       {
         rentMovies: user.rentMovies,
       },
-      { new: true }
+      { new: true, projection: { password: 0 } }
     );
 
-    const { password, ...remainingData } = updatedUser!.toJSON();
-    res.status(202).json(remainingData);
+    res.status(202).json(updatedUser);
   } catch (error) {
     res.status(405).send(error);
     console.error(error);
